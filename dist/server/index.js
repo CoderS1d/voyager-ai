@@ -3,10 +3,10 @@ const HTML = "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf
 const MODELS = {
   "Nemotron 3.5 Lightning": {
     id: "nvidia/nemotron-3.5-lightning-30b-a3b",
-    temperature: 0.6,
+    temperature: 1,
     top_p: 0.95,
-    max_tokens: 8192,
-    reasoning_budget: 4096
+    max_tokens: 4096,
+    chat_template_kwargs: { enable_thinking: false }
   },
   "Nemotron 3 Ultra": {
     id: "nvidia/nemotron-3-ultra-550b-a55b",
@@ -85,14 +85,20 @@ async function chat(request, env) {
   const payload = { model: config.id, messages, stream: false, ...config };
   delete payload.id;
   let upstream;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60_000);
   try {
     upstream = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
       method: "POST",
       headers: { "authorization": `Bearer ${env.NVIDIA_API_KEY}`, "content-type": "application/json", "accept": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      signal: controller.signal
     });
-  } catch {
+  } catch (error) {
+    if (error?.name === "AbortError") return json({ error: "NVIDIA NIM took too long to respond. Try again or choose another model." }, 504);
     return json({ error: "Voyager could not reach NVIDIA NIM. Try again shortly." }, 502);
+  } finally {
+    clearTimeout(timeout);
   }
 
   const data = await upstream.json().catch(() => null);
@@ -118,4 +124,3 @@ export default {
     return json({ error: "Not found" }, 404);
   }
 };
-
