@@ -1,4 +1,4 @@
-# Voyager AI
+# BOG AI
 
 A private, Odysseus-inspired AI workspace powered by NVIDIA NIM. It supports everyday chat, coding, deep reasoning, image understanding, and multimodal file input.
 

@@ -30,7 +30,7 @@ const MODELS = {
   }
 };
 
-const SYSTEM = `You are Voyager, a careful personal AI workspace assistant. Help with coding, study, research, planning, and day-to-day work. Be direct, practical, and honest about uncertainty. Never claim to have sent email, changed a calendar, or modified an external system unless an approved tool confirms it.`;
+const SYSTEM = `You are BOG AI, a careful personal AI workspace assistant. Help with coding, study, research, planning, and day-to-day work. Be direct, practical, and honest about uncertainty. Never claim to have sent email, changed a calendar, or modified an external system unless an approved tool confirms it.`;
 
 const securityHeaders = {
   "content-security-policy": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self' data: blob:; connect-src 'self' https://integrate.api.nvidia.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
@@ -96,7 +96,7 @@ async function chat(request, env) {
     });
   } catch (error) {
     if (error?.name === "AbortError") return json({ error: "NVIDIA NIM took too long to respond. Try again or choose another model." }, 504);
-    return json({ error: "Voyager could not reach NVIDIA NIM. Try again shortly." }, 502);
+    return json({ error: "BOG AI could not reach NVIDIA NIM. Try again shortly." }, 502);
   } finally {
     clearTimeout(timeout);
   }

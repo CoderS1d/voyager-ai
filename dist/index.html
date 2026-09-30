@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Voyager is a private AI workspace for coding, study, research, and everyday work." />
+  <meta name="description" content="BOG AI is a private AI workspace for coding, study, research, and everyday work." />
   <meta name="theme-color" content="#f7f6f2" />
-  <title>Voyager AI</title>
+  <title>BOG AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -100,7 +100,7 @@
 <body>
   <div class="app">
     <aside class="sidebar" id="sidebar">
-      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><strong class="mono">Voyager AI</strong><small class="mono">private</small></div>
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><strong class="mono">BOG AI</strong><small class="mono">private</small></div>
       <button class="new-chat" id="newChat"><span>＋</span><strong>New conversation</strong><span class="mono">⌘ K</span></button>
       <nav class="nav" aria-label="Main navigation">
         <button class="nav-btn active" data-workspace="chat"><span class="nav-icon">◎</span>Chat</button>
@@ -139,7 +139,7 @@
           <div class="welcome" id="welcome">
             <div class="eyebrow">Your private intelligence workspace</div>
             <h1>What are we working on?</h1>
-            <p class="intro">Code, study, plan, or bring your own files. Voyager routes each task to the right model while keeping you in control.</p>
+            <p class="intro">Code, study, plan, or bring your own files. BOG AI routes each task to the right model while keeping you in control.</p>
             <div class="modes">
               <button class="mode" data-prompt="Help me build and debug a coding project."><span class="mode-icon">&lt;/&gt;</span><strong>Build & code</strong><span>Write, review, debug</span></button>
               <button class="mode" data-prompt="Help me study this topic with a clear lesson and a quiz."><span class="mode-icon">◒</span><strong>Study</strong><span>Learn, practice, quiz</span></button>
@@ -156,7 +156,7 @@
         <div class="composer" id="composer">
           <div class="drop-note">Drop files here — documents, code, images, audio, or video</div>
           <div class="attachments" id="attachments"></div>
-          <textarea id="prompt" rows="1" placeholder="Message Voyager…" aria-label="Message Voyager"></textarea>
+          <textarea id="prompt" rows="1" placeholder="Message BOG AI…" aria-label="Message BOG AI"></textarea>
           <div class="composer-foot">
             <button class="tool-btn" id="attach"><span style="font-size:19px">＋</span><span>Add files</span></button>
             <input id="fileInput" type="file" hidden multiple accept=".pdf,.doc,.docx,.txt,.md,.csv,.json,.js,.ts,.tsx,.jsx,.py,.java,.c,.cpp,.html,.css,image/*,audio/*,video/*" />
@@ -165,7 +165,7 @@
             <button class="send" id="send" aria-label="Send message"><span>Send</span><span aria-hidden="true">↑</span></button>
           </div>
         </div>
-        <div class="hint">Voyager can make mistakes. Review important work.</div>
+        <div class="hint">BOG AI can make mistakes. Review important work.</div>
       </div>
     </main>
   </div>
@@ -194,10 +194,10 @@
       const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
       const prompt=$('#prompt'), composer=$('#composer'), files=[], conversation=[];
       const workspaceModes={
-        chat:{eyebrow:'Your private intelligence workspace',title:'What are we working on?',intro:'Code, study, plan, or bring your own files. Voyager routes each task to the right model while keeping you in control.',prompt:'',model:'Nemotron 3 Ultra'},
-        research:{eyebrow:'Deep research',title:'Investigate a question',intro:'Define the question, evidence standard, and output you need. Voyager will structure the investigation and clearly separate evidence from inference.',prompt:'Research this topic deeply. Compare reliable sources, note uncertainty, and organize the findings with citations I can verify: ',model:'Nemotron 3 Ultra'},
+        chat:{eyebrow:'Your private intelligence workspace',title:'What are we working on?',intro:'Code, study, plan, or bring your own files. BOG AI routes each task to the right model while keeping you in control.',prompt:'',model:'Nemotron 3 Ultra'},
+        research:{eyebrow:'Deep research',title:'Investigate a question',intro:'Define the question, evidence standard, and output you need. BOG AI will structure the investigation and clearly separate evidence from inference.',prompt:'Research this topic deeply. Compare reliable sources, note uncertainty, and organize the findings with citations I can verify: ',model:'Nemotron 3 Ultra'},
         documents:{eyebrow:'Document workspace',title:'Read, compare, and transform files',intro:'Attach documents or code, then ask for a summary, extraction, comparison, rewrite, or review.',prompt:'Review the attached document and give me a structured summary with key findings and action items.',model:'Nemotron 3 Nano Omni'},
-        agents:{eyebrow:'Agent workspace',title:'Plan a multi-step task',intro:'Describe the outcome and constraints. Voyager will create a practical plan, work through the steps, and identify where approval is needed.',prompt:'Act as a careful project agent. Break this goal into steps, identify dependencies and risks, then help me execute it: ',model:'Nemotron 3 Ultra'},
+        agents:{eyebrow:'Agent workspace',title:'Plan a multi-step task',intro:'Describe the outcome and constraints. BOG AI will create a practical plan, work through the steps, and identify where approval is needed.',prompt:'Act as a careful project agent. Break this goal into steps, identify dependencies and risks, then help me execute it: ',model:'Nemotron 3 Ultra'},
         tasks:{eyebrow:'Task workspace',title:'Turn work into a clear plan',intro:'Capture an objective, deadline, or backlog and turn it into prioritized, concrete next actions.',prompt:'Turn the following into a prioritized task plan with owners, dependencies, and next actions: ',model:'Nemotron 3 Ultra'}
       };
 
@@ -244,7 +244,7 @@
 
       const searchBackdrop=$('#searchBackdrop');function searchItems(query=''){const q=query.trim().toLowerCase();const items=getRecents().map(x=>x.text);$('#searchResults').innerHTML='';const matches=(items.length?items:['No saved conversations yet']).filter(x=>!q||x.toLowerCase().includes(q));matches.forEach(text=>{const button=document.createElement('button');button.className='search-result';button.textContent=text;button.onclick=()=>{if(items.length)setPrompt(text);searchBackdrop.classList.remove('open')};$('#searchResults').appendChild(button)})}
       $('#searchButton').onclick=()=>{searchBackdrop.classList.add('open');searchItems();setTimeout(()=>$('#searchInput').focus(),0)};$('#closeSearch').onclick=()=>searchBackdrop.classList.remove('open');$('#searchInput').oninput=e=>searchItems(e.target.value);searchBackdrop.addEventListener('click',e=>{if(e.target===e.currentTarget)searchBackdrop.classList.remove('open')});
-      $('#shareButton').onclick=async()=>{if(!conversation.length){toast('Start a conversation before sharing');return}const text=conversation.map(m=>`## ${m.role==='user'?'You':'Voyager'}\n\n${typeof m.content==='string'?m.content:'[Message with attachments]'}`).join('\n\n');try{await navigator.clipboard.writeText(text);toast('Conversation copied to clipboard')}catch{toast('Clipboard access is unavailable in this browser')}};
+      $('#shareButton').onclick=async()=>{if(!conversation.length){toast('Start a conversation before sharing');return}const text=conversation.map(m=>`## ${m.role==='user'?'You':'BOG AI'}\n\n${typeof m.content==='string'?m.content:'[Message with attachments]'}`).join('\n\n');try{await navigator.clipboard.writeText(text);toast('Conversation copied to clipboard')}catch{toast('Clipboard access is unavailable in this browser')}};
       $('#toolsButton').onclick=()=>openModal('Tools & integrations');
       let recognition;$('#voiceButton').onclick=()=>{const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SpeechRecognition){toast('Voice input is not supported in this browser');return}if(recognition){recognition.stop();return}recognition=new SpeechRecognition();recognition.continuous=false;recognition.interimResults=false;recognition.onresult=e=>setPrompt(`${prompt.value}${prompt.value?' ':''}${e.results[0][0].transcript}`);recognition.onerror=()=>toast('Voice input could not start');recognition.onend=()=>{recognition=null;$('#voiceButton').classList.remove('active')};recognition.start();$('#voiceButton').classList.add('active');toast('Listening…')};
       $('#assistantText').addEventListener('click',async e=>{const button=e.target.closest('.copy-code');if(!button)return;const code=button.closest('.code-block').querySelector('code').textContent;try{await navigator.clipboard.writeText(code);button.textContent='Copied';setTimeout(()=>button.textContent='Copy',1400)}catch{toast('Clipboard access is unavailable')}});
@@ -256,7 +256,7 @@
       $('#send').onclick=sendMessage;
       document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();resetChat()}if(e.key==='Escape'){closeModal();searchBackdrop.classList.remove('open');$('#modelMenu').classList.remove('open');$('#sidebar').classList.remove('open')}});
       renderHistory();setModel('Nemotron 3 Ultra');
-      if(document.modelContext?.registerTool){const lifecycle=new AbortController();Promise.resolve(document.modelContext.registerTool({name:'start_new_conversation',title:'Start new conversation',description:'Clear the current Voyager conversation and focus the message composer.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute(){resetChat();return{status:'ready'}}},{signal:lifecycle.signal})).catch(()=>{});Promise.resolve(document.modelContext.registerTool({name:'select_ai_model',title:'Select AI model',description:'Select the active AI model in Voyager.',inputSchema:{type:'object',properties:{model:{type:'string',enum:['Nemotron 3.5 Lightning','Nemotron 3 Ultra','Nemotron 3 Nano Omni','Llama 3.2 Vision']}},required:['model'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute({model}){const option=$$('.model-option').find(o=>o.dataset.model===model);if(!option)throw new Error('Unsupported model');option.click();return{model,status:'selected'}}},{signal:lifecycle.signal})).catch(()=>{})}
+      if(document.modelContext?.registerTool){const lifecycle=new AbortController();Promise.resolve(document.modelContext.registerTool({name:'start_new_conversation',title:'Start new conversation',description:'Clear the current BOG AI conversation and focus the message composer.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute(){resetChat();return{status:'ready'}}},{signal:lifecycle.signal})).catch(()=>{});Promise.resolve(document.modelContext.registerTool({name:'select_ai_model',title:'Select AI model',description:'Select the active AI model in BOG AI.',inputSchema:{type:'object',properties:{model:{type:'string',enum:['Nemotron 3.5 Lightning','Nemotron 3 Ultra','Nemotron 3 Nano Omni','Llama 3.2 Vision']}},required:['model'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute({model}){const option=$$('.model-option').find(o=>o.dataset.model===model);if(!option)throw new Error('Unsupported model');option.click();return{model,status:'selected'}}},{signal:lifecycle.signal})).catch(()=>{})}
     })();
   </script>
 </body>
