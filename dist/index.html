@@ -181,6 +181,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    (() => {
     const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
     const prompt=$('#prompt'), composer=$('#composer'), files=[], conversation=[];
     function toast(text){const el=$('#toast');el.textContent=text;el.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>el.classList.remove('show'),2600)}
@@ -212,6 +213,7 @@
     $('#send').onclick=sendMessage;
     document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();resetChat()}if(e.key==='Escape'){closeModal();$('#modelMenu').classList.remove('open');$('#sidebar').classList.remove('open')}});
     if(document.modelContext?.registerTool){const lifecycle=new AbortController();Promise.resolve(document.modelContext.registerTool({name:'start_new_conversation',title:'Start new conversation',description:'Clear the current Voyager conversation and focus the message composer.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute(){resetChat();return{status:'ready'}}},{signal:lifecycle.signal})).catch(()=>{});Promise.resolve(document.modelContext.registerTool({name:'select_ai_model',title:'Select AI model',description:'Select the active AI model in Voyager.',inputSchema:{type:'object',properties:{model:{type:'string',enum:['Nemotron 3.5 Lightning','Nemotron 3 Ultra','Nemotron 3 Nano Omni','Llama 3.2 Vision']}},required:['model'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute({model}){const option=$$('.model-option').find(o=>o.dataset.model===model);if(!option)throw new Error('Unsupported model');option.click();return{model,status:'selected'}}},{signal:lifecycle.signal})).catch(()=>{})}
+    })();
   </script>
 </body>
 </html>
