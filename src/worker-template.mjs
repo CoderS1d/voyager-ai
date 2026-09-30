@@ -13,7 +13,7 @@ const MODELS = {
     temperature: 0.6,
     top_p: 0.95,
     max_tokens: 16384,
-    chat_template_kwargs: { enable_thinking: true }
+    chat_template_kwargs: { enable_thinking: false }
   },
   "Nemotron 3 Nano Omni": {
     id: "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
@@ -33,7 +33,7 @@ const MODELS = {
 const SYSTEM = `You are BOG AI, a careful personal AI workspace assistant. Help with coding, study, research, planning, and day-to-day work. Be direct, practical, and honest about uncertainty. Never claim to have sent email, changed a calendar, or modified an external system unless an approved tool confirms it.`;
 
 const securityHeaders = {
-  "content-security-policy": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self' data: blob:; connect-src 'self' https://integrate.api.nvidia.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+  "content-security-policy": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; worker-src 'self' blob: https://cdn.jsdelivr.net; img-src 'self' data: https:; media-src 'self' data: blob:; connect-src 'self' https://integrate.api.nvidia.com https://cdn.jsdelivr.net; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
   "referrer-policy": "strict-origin-when-cross-origin",
   "x-content-type-options": "nosniff",
   "x-frame-options": "DENY",
@@ -126,6 +126,25 @@ async function chat(request, env) {
       content = data?.choices?.[0]?.message?.content || "";
       usage = data?.usage || null;
     } catch {}
+  }
+  if (!content) {
+    const retryController = new AbortController();
+    const retryTimeout = setTimeout(() => retryController.abort(), 60_000);
+    try {
+      const retryResponse = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+        method: "POST",
+        headers: { "authorization": `Bearer ${env.NVIDIA_API_KEY}`, "content-type": "application/json", "accept": "application/json" },
+        body: JSON.stringify({ ...payload, stream: false }),
+        signal: retryController.signal
+      });
+      const retryData = await retryResponse.json().catch(() => null);
+      if (retryResponse.ok) {
+        content = retryData?.choices?.[0]?.message?.content || "";
+        usage = retryData?.usage || usage;
+      }
+    } catch {} finally {
+      clearTimeout(retryTimeout);
+    }
   }
   if (!content) return json({ error: "NVIDIA NIM returned an empty response." }, 502);
   return json({ content, model: config.id, usage });
