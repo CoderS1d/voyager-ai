@@ -82,7 +82,7 @@ async function chat(request, env) {
   try { messages = [{ role: "system", content: SYSTEM }, ...cleanMessages(body.messages)]; }
   catch (error) { return json({ error: error.message }, 400); }
 
-  const payload = { model: config.id, messages, stream: false, ...config };
+  const payload = { model: config.id, messages, stream: true, ...config };
   delete payload.id;
   let upstream;
   const controller = new AbortController();
@@ -90,7 +90,7 @@ async function chat(request, env) {
   try {
     upstream = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
       method: "POST",
-      headers: { "authorization": `Bearer ${env.NVIDIA_API_KEY}`, "content-type": "application/json", "accept": "application/json" },
+      headers: { "authorization": `Bearer ${env.NVIDIA_API_KEY}`, "content-type": "application/json", "accept": "text/event-stream" },
       body: JSON.stringify(payload),
       signal: controller.signal
     });
@@ -101,14 +101,34 @@ async function chat(request, env) {
     clearTimeout(timeout);
   }
 
-  const data = await upstream.json().catch(() => null);
+  const raw = await upstream.text();
   if (!upstream.ok) {
+    let data;
+    try { data = JSON.parse(raw); } catch { data = null; }
     const message = data?.error?.message || data?.detail || `NVIDIA NIM returned ${upstream.status}.`;
     return json({ error: String(message).slice(0, 800) }, upstream.status >= 400 && upstream.status < 600 ? upstream.status : 502);
   }
-  const content = data?.choices?.[0]?.message?.content;
+  let content = "";
+  let usage = null;
+  for (const line of raw.split(/\r?\n/)) {
+    if (!line.startsWith("data:")) continue;
+    const value = line.slice(5).trim();
+    if (!value || value === "[DONE]") continue;
+    try {
+      const chunk = JSON.parse(value);
+      content += chunk?.choices?.[0]?.delta?.content || "";
+      usage = chunk?.usage || usage;
+    } catch {}
+  }
+  if (!content) {
+    try {
+      const data = JSON.parse(raw);
+      content = data?.choices?.[0]?.message?.content || "";
+      usage = data?.usage || null;
+    } catch {}
+  }
   if (!content) return json({ error: "NVIDIA NIM returned an empty response." }, 502);
-  return json({ content, model: config.id, usage: data.usage || null });
+  return json({ content, model: config.id, usage });
 }
 
 export default {
