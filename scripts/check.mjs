@@ -1,7 +1,10 @@
+import { readFile } from "node:fs/promises";
 import worker from "../dist/server/index.js";
 
 const page = await worker.fetch(new Request("https://voyager.test/"), {}, {});
-if (page.status !== 200 || !(await page.text()).includes("Voyager AI")) throw new Error("Homepage check failed");
+const pageBody = await page.text();
+const expectedPage = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
+if (page.status !== 200 || pageBody !== expectedPage) throw new Error("Homepage check failed");
 
 const health = await worker.fetch(new Request("https://voyager.test/api/health"), {}, {});
 const healthBody = await health.json();
@@ -14,4 +17,3 @@ const chat = await worker.fetch(new Request("https://voyager.test/api/chat", {
 }), {}, {});
 if (chat.status !== 503) throw new Error("Missing-key guard failed");
 console.log("All checks passed");
-
